@@ -1,4 +1,4 @@
-# UnityInGameConsole
+# Unity-InGame-Console
 
 Small script to generate an in-game console to show logs.
 
