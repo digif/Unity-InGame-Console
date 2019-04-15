@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,16 +39,11 @@ public class InGameConsole : MonoBehaviour
     uint duplicates = 0;
     bool isAtBottom = true;
 
-
-    /// <summary>
-    /// put a canvas element in which the console will be rendered. canvas take up all the screen if left empty.
-    /// </summary>
-    public GameObject consoleCanvas;
-
     public int scrollbarWidth = 10;
-    public int margin = 20;
+    public int margins = 20;
+    public int textSize = 14;
 
-
+    GameObject consoleCanvas;
     GameObject scrollview;
     GameObject scrollBar;
     GameObject handle;
@@ -64,17 +59,26 @@ public class InGameConsole : MonoBehaviour
     {
         RectTransform m_RectTransform;
 
-        if(consoleCanvas == null)
-        {
-            consoleCanvas = new GameObject("console", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        consoleCanvas = new GameObject("console", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        consoleCanvas.transform.SetParent(this.transform);
+        if (this.gameObject.GetComponent<RectTransform>() == null)
             consoleCanvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+        else
+        {
+            Destroy(consoleCanvas.GetComponent<CanvasScaler>());
+
+            m_RectTransform = consoleCanvas.GetComponent<RectTransform>();
+            m_RectTransform.sizeDelta = new Vector2(0, 0);
+            m_RectTransform.anchorMin = new Vector2(0, 0);
+            m_RectTransform.anchorMax = new Vector2(1, 1);
+            m_RectTransform.anchoredPosition = new Vector2(0, 0);
         }
 
         scrollview = new GameObject("scrollView", typeof(CanvasRenderer), typeof(ScrollRect), typeof(Image), typeof(Mask));
         scrollview.transform.SetParent(consoleCanvas.transform);
 
         m_RectTransform = scrollview.GetComponent<RectTransform>();
-        m_RectTransform.sizeDelta = new Vector2(-(margin*2), -(margin * 2));
+        m_RectTransform.sizeDelta = new Vector2(-(margins*2), -(margins * 2));
         m_RectTransform.anchorMin = new Vector2(0, 0);
         m_RectTransform.anchorMax = new Vector2(1, 1);
         m_RectTransform.anchoredPosition = new Vector2(0, 0);
@@ -91,10 +95,10 @@ public class InGameConsole : MonoBehaviour
         scrollBar.transform.SetParent(consoleCanvas.transform);
 
         m_RectTransform = scrollBar.GetComponent<RectTransform>();
-        m_RectTransform.sizeDelta = new Vector2(scrollbarWidth, -(margin * 2));
+        m_RectTransform.sizeDelta = new Vector2(scrollbarWidth, -(margins * 2));
         m_RectTransform.anchorMin = new Vector2(1, 0);
         m_RectTransform.anchorMax = new Vector2(1, 1);
-        m_RectTransform.anchoredPosition = new Vector2(-(margin + scrollbarWidth), 0);
+        m_RectTransform.anchoredPosition = new Vector2(-(margins + scrollbarWidth), 0);
         m_RectTransform.pivot = new Vector2(0.5f, 0.5f);
 
 
@@ -132,6 +136,7 @@ public class InGameConsole : MonoBehaviour
 
         m_Text = consoleText.GetComponent<Text>();
         m_Text.font = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+        m_Text.fontSize = textSize;
 
         m_Text.text = "";
 
